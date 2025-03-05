@@ -1,0 +1,8 @@
+# Tüm testleri çalıştır
+pytest
+
+# Belirli bir test dosyasını çalıştır
+pytest tests/test_processor.py
+
+# Test coverage raporu al
+pytest --cov=app --cov=services tests/

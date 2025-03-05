@@ -1,50 +1,135 @@
-from fastapi import FastAPI, File, UploadFile, Request
+from fastapi import FastAPI, File, UploadFile, HTTPException, Request
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from services.analyzer import DocumentAnalyzer
-from services.processor import PDFProcessor, ImageProcessor
+from typing import Optional
+import uvicorn
+import time
 
-app = FastAPI()
-templates = Jinja2Templates(directory="templates")
+from .config import settings
+from services.processor.pdf_processor import PDFProcessor
+from services.processor.image_processor import ImageProcessor
+from services.analyzer.document_analyzer import DocumentAnalyzer
+from core.models import ProcessingStatus
 
-class DocumentAnalysisService:
-    def __init__(self):
-        self.analyzer = DocumentAnalyzer()
-        self.processors = {
-            'pdf': PDFProcessor(),
-            'image': ImageProcessor()
-        }
+app = FastAPI(
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
+    debug=settings.DEBUG
+)
 
-    def process_document(self, file_bytes: bytes, file_type: str) -> dict:
-        processor = self.processors['pdf'] if file_type == 'pdf' else self.processors['image']
-        extracted_text = processor.extract_text(file_bytes)
-        analysis_results = self.analyzer.analyze_text(extracted_text)
-        
-        return {
-            "analysis": {
-                "risk_score": analysis_results.risk_score,
-                "overall_risk_level": analysis_results.overall_risk_level.value,
-                "findings": [vars(f) for f in analysis_results.findings],
-                "categories": {
-                    cat: [vars(f) for f in findings]
-                    for cat, findings in analysis_results.categories.items()
-                }
-            },
-            "extracted_text": extracted_text
-        }
+# Static files and templates setup
+app.mount("/static", StaticFiles(directory=str(settings.STATIC_DIR)), name="static")
+templates = Jinja2Templates(directory=str(settings.TEMPLATES_DIR))
 
-analysis_service = DocumentAnalysisService()
+# Initialize services
+pdf_processor = PDFProcessor()
+image_processor = ImageProcessor()
+document_analyzer = DocumentAnalyzer()
 
 @app.get("/", response_class=HTMLResponse)
-async def upload_form(request: Request):
-    return templates.TemplateResponse("upload.html", {"request": request})
+async def home(request: Request):
+    """Render the home page with upload form"""
+    return templates.TemplateResponse(
+        "upload.html",
+        {"request": request, "app_name": settings.APP_NAME}
+    )
 
 @app.post("/upload/")
 async def upload_file(file: UploadFile = File(...)):
-    file_bytes = await file.read()
-    file_type = 'pdf' if file.filename.endswith('.pdf') else 'image'
+    """Handle file upload and analysis"""
+    try:
+        # Validate file
+        await validate_file(file)
+        
+        # Read file content
+        start_time = time.time()
+        file_bytes = await file.read()
+        
+        # Process file based on type
+        if file.filename.endswith('.pdf'):
+            processor_result = pdf_processor.process_document(file_bytes, file.filename)
+        else:
+            processor_result = image_processor.process_document(file_bytes, file.filename)
+            
+        if not processor_result.success:
+            raise HTTPException(
+                status_code=422,
+                detail=f"File processing failed: {processor_result.error}"
+            )
+        
+        # Analyze document
+        analysis_result = await document_analyzer.analyze_document(
+            processor_result.extracted_text,
+            document_id=file.filename
+        )
+        
+        # Prepare response
+        processing_time = time.time() - start_time
+        
+        return {
+            "filename": file.filename,
+            "analysis": {
+                "risk_score": analysis_result.risk_score,
+                "overall_risk_level": analysis_result.overall_risk_level.value,
+                "findings": [vars(f) for f in analysis_result.findings],
+                "categories": {
+                    cat: [vars(f) for f in findings]
+                    for cat, findings in analysis_result.categories.items()
+                },
+                "recommendations": analysis_result.recommendations,
+                "document_type": analysis_result.document_type.value,
+                "processing_time": processing_time
+            },
+            "metadata": analysis_result.metadata,
+            "status": analysis_result.status.value
+        }
+        
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"An error occurred during processing: {str(e)}"
+        )
+
+async def validate_file(file: UploadFile) -> None:
+    """Validate uploaded file"""
+    # Check file size
+    file_size = 0
+    chunk_size = 1024  # 1KB
+    while chunk := await file.read(chunk_size):
+        file_size += len(chunk)
+        if file_size > settings.MAX_FILE_SIZE:
+            raise HTTPException(
+                status_code=413,
+                detail="File too large"
+            )
     
-    results = analysis_service.process_document(file_bytes, file_type)
-    results["filename"] = file.filename
+    # Reset file position after reading
+    await file.seek(0)
     
-    return results
+    # Check file extension
+    ext = file.filename.split('.')[-1].lower()
+    if ext not in settings.ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=415,
+            detail=f"File type not allowed. Allowed types: {settings.ALLOWED_EXTENSIONS}"
+        )
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {
+        "status": "healthy",
+        "app_name": settings.APP_NAME,
+        "version": settings.APP_VERSION
+    }
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=settings.DEBUG
+    )

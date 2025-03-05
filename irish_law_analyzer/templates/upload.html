@@ -1,82 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Document Analysis</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .upload-form {
-            border: 2px dashed #ccc;
-            padding: 20px;
-            text-align: center;
-            margin: 20px 0;
-        }
-        #result {
-            margin-top: 20px;
-            white-space: pre-wrap;
-        }
-        .risk-high { color: red; }
-        .risk-medium { color: orange; }
-        .risk-low { color: green; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
 </head>
 <body>
-    <h1>Document Analysis Tool</h1>
-    <div class="upload-form">
-        <form id="uploadForm">
-            <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required>
-            <button type="submit">Analyze Document</button>
-        </form>
-    </div>
-    <div id="result"></div>
+    <div class="container">
+        <header>
+            <h1>Irish Law Document Analyzer</h1>
+        </header>
 
-    <script>
-        document.getElementById('uploadForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const resultDiv = document.getElementById('result');
-            
-            resultDiv.innerHTML = 'Analyzing...';
-            
-            try {
-                const response = await fetch('/upload/', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const data = await response.json();
-                
-                let html = `
-                    <h2>Analysis Results for ${data.filename}</h2>
-                    <p class="risk-${data.analysis.overall_risk_level.toLowerCase()}">
-                        Risk Score: ${data.analysis.risk_score}
-                        (${data.analysis.overall_risk_level})
-                    </p>
-                    <h3>Findings:</h3>
-                    <ul>
-                `;
-                
-                data.analysis.findings.forEach(finding => {
-                    html += `
-                        <li class="risk-${finding.risk_level.toLowerCase()}">
-                            ${finding.keyword} (${finding.category})
-                            <br>Occurrences: ${finding.occurrences}
-                            <br>Context: ${finding.context}
-                        </li>
-                    `;
-                });
-                
-                html += '</ul>';
-                
-                resultDiv.innerHTML = html;
-            } catch (error) {
-                resultDiv.innerHTML = 'Error analyzing document: ' + error.message;
-            }
-        };
-    </script>
+        <main>
+            <div class="upload-section">
+                <div class="upload-form">
+                    <h2>Upload Document</h2>
+                    <form id="uploadForm">
+                        <div class="file-input">
+                            <input type="file" name="file" id="file" accept=".pdf,.jpg,.jpeg,.png" required>
+                            <label for="file">Choose a file or drag it here</label>
+                        </div>
+                        <button type="submit" class="submit-btn">Analyze Document</button>
+                    </form>
+                </div>
+
+                <div class="loading-indicator" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Analyzing document...</p>
+                </div>
+            </div>
+
+            <div id="results" class="results-section" style="display: none;">
+                <h2>Analysis Results</h2>
+                <div class="results-content">
+                    <div class="risk-score-section">
+                        <h3>Risk Assessment</h3>
+                        <div id="riskScore"></div>
+                    </div>
+
+                    <div class="findings-section">
+                        <h3>Findings</h3>
+                        <div id="findings"></div>
+                    </div>
+
+                    <div class="recommendations-section">
+                        <h3>Recommendations</h3>
+                        <div id="recommendations"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', path='/js/main.js') }}"></script>
 </body>
 </html>
