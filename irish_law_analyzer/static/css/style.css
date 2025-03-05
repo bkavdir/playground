@@ -125,3 +125,4 @@ header h1 {
 .finding-item.high { border-left-color: var(--danger-color); }
 .finding-item.medium { border-left-color: var(--warning-color); }
 .finding-item.low { border-left-color: var(--success-color); }
+

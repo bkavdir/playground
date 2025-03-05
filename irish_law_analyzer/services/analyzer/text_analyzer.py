@@ -141,10 +141,33 @@ class TextAnalyzer:
                     ))
 
     def _get_context(self, text: str, start: int, end: int) -> str:
-        """Get context around a matched pattern"""
-        context_start = max(0, start - self.context_window)
-        context_end = min(len(text), end + self.context_window)
-        return f"...{text[context_start:context_end]}..."
+     """Get better formatted context around a matched pattern"""
+    # Expand the context window
+     context_start = max(0, start - self.context_window)
+     context_end = min(len(text), end + self.context_window)
+    
+    # Get the context
+     context = text[context_start:context_end]
+    
+    # Clean and format the context
+     context = context.replace('\n', ' ')  # Replace newlines with spaces
+     context = ' '.join(context.split())   # Remove extra whitespace
+    
+    # Add ellipsis if context is truncated
+     if context_start > 0:
+        context = f"...{context}"
+     if context_end < len(text):
+        context = f"{context}..."
+    
+    # Format the matched text to make it stand out
+     matched_text = text[start:end]
+     formatted_context = context.replace(
+        matched_text,
+        f"**{matched_text}**"  # Bold the matched text
+    )
+    
+     return formatted_context
+
 
     def _categorize_findings(self, result: AnalysisResult):
         """Categorize findings by type"""

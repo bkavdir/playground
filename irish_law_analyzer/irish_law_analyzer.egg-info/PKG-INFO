@@ -1,0 +1,13 @@
+Metadata-Version: 2.1
+Name: irish_law_analyzer
+Version: 0.1.0
+Requires-Dist: fastapi
+Requires-Dist: uvicorn
+Requires-Dist: python-multipart
+Requires-Dist: jinja2
+Requires-Dist: pdf2image
+Requires-Dist: pytesseract
+Requires-Dist: pdfplumber
+Requires-Dist: Pillow
+Requires-Dist: filetype
+Requires-Dist: pydantic-settings

@@ -1,0 +1,23 @@
+2025-03-05 03:33:36,369 [INFO] Starting processing for document: 20250305033336_b2adfa755b
+2025-03-05 03:33:39,665 [ERROR] Error occurred: {"error_type": "UnexpectedError", "error_message": "[WinError 2] The system cannot find the file specified: 'C:\\\\Users\\\\bkavd\\\\Desktop\\\\projects\\\\irish_law_analyzer\\\\uploads\\\\20250305033336_sample_letter.pdf'", "timestamp": "2025-03-05T03:33:39.665453"}
+2025-03-05 03:34:10,647 [INFO] Starting processing for document: 20250305033410_b2adfa755b
+2025-03-05 03:34:12,433 [ERROR] Error occurred: {"error_type": "UnexpectedError", "error_message": "[WinError 2] The system cannot find the file specified: 'C:\\\\Users\\\\bkavd\\\\Desktop\\\\projects\\\\irish_law_analyzer\\\\uploads\\\\20250305033410_sample_letter.pdf'", "timestamp": "2025-03-05T03:34:12.433754"}
+2025-03-05 03:34:19,171 [INFO] Starting processing for document: 20250305033419_6fa71ee4fb
+2025-03-05 03:34:21,113 [ERROR] Error occurred: {"error_type": "UnexpectedError", "error_message": "[WinError 2] The system cannot find the file specified: 'C:\\\\Users\\\\bkavd\\\\Desktop\\\\projects\\\\irish_law_analyzer\\\\uploads\\\\20250305033419_sample_contract.pdf'", "timestamp": "2025-03-05T03:34:21.113861"}
+2025-03-05 03:35:55,672 [INFO] Starting processing for document: 20250305033555_0e4af2ce06
+2025-03-05 03:35:55,861 [ERROR] Error occurred: {"error_type": "UnexpectedError", "error_message": "[WinError 2] The system cannot find the file specified: 'C:\\\\Users\\\\bkavd\\\\Desktop\\\\projects\\\\irish_law_analyzer\\\\uploads\\\\20250305033555_IRP_PG_JAN_Bugra Kavdir.pdf'", "timestamp": "2025-03-05T03:35:55.861226"}
+2025-03-05 03:40:22,740 [INFO] Application started successfully
+2025-03-05 03:40:47,560 [INFO] Starting processing for document: 20250305034047_b2adfa755b
+2025-03-05 03:40:50,215 [INFO] Analysis completed: {"document_id": "20250305034047_b2adfa755b", "timestamp": "2025-03-05T03:40:50.215537", "risk_score": 2.5, "risk_level": "LOW", "findings_count": 0}
+2025-03-05 03:41:03,279 [INFO] Starting processing for document: 20250305034103_d49a915f04
+2025-03-05 03:41:03,849 [INFO] Analysis completed: {"document_id": "20250305034103_d49a915f04", "timestamp": "2025-03-05T03:41:03.849599", "risk_score": 1.2, "risk_level": "LOW", "findings_count": 0}
+2025-03-05 03:41:17,805 [INFO] Starting processing for document: 20250305034117_65a6f0ad74
+2025-03-05 03:41:19,335 [INFO] Analysis completed: {"document_id": "20250305034117_65a6f0ad74", "timestamp": "2025-03-05T03:41:19.335663", "risk_score": 1.4, "risk_level": "LOW", "findings_count": 0}
+2025-03-05 03:41:46,217 [INFO] Starting processing for document: 20250305034146_6fa71ee4fb
+2025-03-05 03:41:48,600 [INFO] Analysis completed: {"document_id": "20250305034146_6fa71ee4fb", "timestamp": "2025-03-05T03:41:48.600847", "risk_score": 4.3, "risk_level": "MEDIUM", "findings_count": 0}
+2025-03-05 03:43:01,599 [INFO] Starting processing for document: 20250305034301_40fb6d469b
+2025-03-05 03:43:05,787 [INFO] Analysis completed: {"document_id": "20250305034301_40fb6d469b", "timestamp": "2025-03-05T03:43:05.787388", "risk_score": 2.2, "risk_level": "LOW", "findings_count": 0}
+2025-03-05 03:49:11,465 [INFO] Application started successfully
+2025-03-05 03:49:51,031 [INFO] Application started successfully
+2025-03-05 03:50:10,907 [INFO] Starting processing for document: 20250305035010_6fa71ee4fb
+2025-03-05 03:50:13,563 [INFO] Analysis completed: {"document_id": "20250305035010_6fa71ee4fb", "timestamp": "2025-03-05T03:50:13.563935", "risk_score": 4.3, "risk_level": "MEDIUM", "findings_count": 0}
